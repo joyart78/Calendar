@@ -1,43 +1,39 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { startOfMonth, addDays, format, addMonths, isToday, getDay } from 'date-fns';
+import {
+    startOfMonth,
+    addDays,
+    format,
+    addMonths,
+    isToday,
+    getDay,
+    endOfMonth,
+} from 'date-fns';
 
 const Calendar = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const renderDays = () => {
-        const daysInMonth = new Date(
-            selectedDate.getFullYear(),
-            selectedDate.getMonth() + 1,
-            0
-        ).getDate();
-
         const startOfCalendar = startOfMonth(selectedDate);
+        const endOfCalendar = endOfMonth(selectedDate);
 
         const days = [];
         const currentMonthDay = startOfCalendar.getDate();
         const startDayOfWeek = getDay(startOfCalendar);
 
-        for (let i = startDayOfWeek; i > 0; i--) {
-            const prevMonthDate = addDays(startOfCalendar, -i);
+        for (let i = 0; i < startDayOfWeek; i++) {
             days.push(
-                <TouchableOpacity
-                    key={`prevMonth${i}`}
-                    onPress={() => handleDatePress(prevMonthDate)}
-                    style={styles.dateContainer}
-                >
-                    <Text style={styles.prevMonthDateText}>
-                        {format(prevMonthDate, 'd')}
-                    </Text>
-                </TouchableOpacity>
+                <View key={`empty-${i}`} style={styles.dateContainer}>
+                    <Text style={styles.dateText}>{''}</Text>
+                </View>
             );
         }
 
-        for (let i = 0; i < daysInMonth; i++) {
-            const currentDate = addDays(startOfCalendar, i);
+        for (let i = 1; i <= endOfCalendar.getDate(); i++) {
+            const currentDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), i);
             days.push(
                 <TouchableOpacity
-                    key={i}
+                    key={currentDate.toString()}
                     onPress={() => handleDatePress(currentDate)}
                     style={styles.dateContainer}
                 >
@@ -52,22 +48,6 @@ const Calendar = () => {
                         ]}
                     >
                         {format(currentDate, 'd')}
-                    </Text>
-                </TouchableOpacity>
-            );
-        }
-
-        const remainingDays = 7 - (days.length % 7);
-        for (let i = 1; i <= remainingDays; i++) {
-            const nextMonthDate = addDays(startOfCalendar, daysInMonth + i);
-            days.push(
-                <TouchableOpacity
-                    key={`nextMonth${i}`}
-                    onPress={() => handleDatePress(nextMonthDate)}
-                    style={styles.dateContainer}
-                >
-                    <Text style={styles.nextMonthDateText}>
-                        {format(nextMonthDate, 'd')}
                     </Text>
                 </TouchableOpacity>
             );
@@ -111,6 +91,9 @@ const Calendar = () => {
                 <Text style={styles.dayText}>Sat</Text>
             </View>
             <View style={styles.datesContainer}>{renderDays()}</View>
+            <Text style={styles.selectedDateText}>
+                Selected Date: {format(selectedDate, 'MMMM d, yyyy')}
+            </Text>
             <View style={styles.footer}>
                 <TouchableOpacity onPress={() => handleYearChange(-1)}>
                     <Text>Prev Year</Text>
@@ -160,16 +143,6 @@ const styles = StyleSheet.create({
     dateText: {
         textAlign: 'center',
         fontSize: 16,
-    },
-    prevMonthDateText: {
-        textAlign: 'center',
-        fontSize: 16,
-        color: 'gray',
-    },
-    nextMonthDateText: {
-        textAlign: 'center',
-        fontSize: 16,
-        color: 'gray',
     },
     todayDate: {
         backgroundColor: 'yellow',
