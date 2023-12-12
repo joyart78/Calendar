@@ -91,9 +91,7 @@ const Calendar = () => {
                 <Text style={styles.dayText}>Sat</Text>
             </View>
             <View style={styles.datesContainer}>{renderDays()}</View>
-            <Text style={styles.selectedDateText}>
-                Selected Date: {format(selectedDate, 'MMMM d, yyyy')}
-            </Text>
+
             <View style={styles.footer}>
                 <TouchableOpacity onPress={() => handleYearChange(-1)}>
                     <Text>Prev Year</Text>
